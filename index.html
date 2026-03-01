@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hunter V2 | Pro Terminal</title>
+    <title>Hunter V3 | Intelligence Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,7 @@
         .mono { font-family: 'JetBrains Mono', monospace; }
         .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
         select { color-scheme: dark; }
-        select option { background-color: #0f172a !important; color: white !important; padding: 10px; }
+        select option { background-color: #0f172a !important; color: white !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         @keyframes sweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         .loading-bar { position: relative; overflow: hidden; }
@@ -29,8 +29,8 @@
         
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
             <div class="text-center md:text-left">
-                <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter italic">HUNTER <span class="text-blue-500 not-italic">V2</span></h1>
-                <p class="text-slate-500 font-bold text-[9px] tracking-[0.2em] uppercase">Mobile Optimized Terminal</p>
+                <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter italic">HUNTER <span class="text-blue-500 not-italic">V3</span></h1>
+                <p class="text-slate-500 font-bold text-[9px] tracking-[0.2em] uppercase">Intelligence & Strategy Engine</p>
             </div>
             
             <div class="flex items-center gap-3 w-full md:w-auto">
@@ -49,7 +49,7 @@
             <div class="col-span-12 lg:col-span-4 space-y-4">
                 <div class="glass p-6 md:p-8 rounded-3xl space-y-5 border-t border-white/10">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-[10px] font-black uppercase text-blue-500">Config Panel</h2>
+                        <h2 class="text-[10px] font-black uppercase text-blue-500">Strategy Config</h2>
                         <button onclick="toggleSound()" id="soundBtn" class="text-[9px] font-bold text-slate-600 uppercase">🔊 ON</button>
                     </div>
 
@@ -70,8 +70,8 @@
                                 <input type="number" id="stakeAwal" value="1.5" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Predict (0-9)</label>
-                                <input type="number" id="predDigit" value="5" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
+                                <label class="text-[9px] font-black uppercase text-blue-500 ml-1">Ticks (Duration)</label>
+                                <input type="number" id="tickCount" value="1" min="1" max="10" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
                             </div>
                         </div>
 
@@ -81,8 +81,8 @@
                                 <input type="number" id="martingaleX" value="11" step="0.5" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-blue-400 outline-none">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Ticks (Duration)</label>
-                                <input type="number" id="tickCount" value="1" min="1" max="10" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
+                                <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Prob Limit %</label>
+                                <input type="number" id="probLimit" value="8" min="1" max="15" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
                             </div>
                         </div>
 
@@ -99,7 +99,7 @@
                     </div>
 
                     <div class="pt-2 space-y-3">
-                        <button id="btnAction" onclick="toggleBot()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 text-[11px] uppercase tracking-widest">Execute Strategy</button>
+                        <button id="btnAction" onclick="toggleBot()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 text-[11px] uppercase tracking-widest">Execute Hunter V3</button>
                         <button id="btnReset" onclick="manualReset()" class="w-full bg-white/5 text-slate-400 font-bold py-3 rounded-xl text-[9px] uppercase tracking-widest">Manual Stake Reset</button>
                     </div>
                 </div>
@@ -112,29 +112,29 @@
                         <p id="statProfit" class="text-xl md:text-2xl font-black text-white mono">$0.00</p>
                     </div>
                     <div class="glass p-5 rounded-3xl">
-                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Balance</p>
-                        <p id="statBalance" class="text-sm md:text-xl font-black text-white truncate mono">$0.00</p>
+                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Scanner (Last Digit)</p>
+                        <p id="statLastDigit" class="text-xl md:text-2xl font-black text-blue-400 mono">--</p>
                     </div>
                     <div class="glass p-5 rounded-3xl">
-                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Loss Streak</p>
+                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Loss Step</p>
                         <p id="statStreak" class="text-xl md:text-2xl font-black text-orange-500 mono">0</p>
                     </div>
                     <div class="glass p-5 rounded-3xl">
-                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Next Trade</p>
+                        <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Next Stake</p>
                         <p id="statNextStake" class="text-sm md:text-xl font-black text-blue-400 mono">$1.50</p>
                     </div>
                 </div>
 
                 <div class="glass rounded-3xl overflow-hidden flex flex-col h-[280px] md:h-[350px]">
                     <div class="bg-white/5 p-3 px-5 border-b border-white/5 flex justify-between items-center">
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Live Logs</span>
+                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Intelligence Feed</span>
                         <div class="flex items-center gap-3">
                             <button onclick="clearLogs()" class="btn-clear">Clear Logs</button>
                             <div id="loader" class="hidden w-12 h-1 bg-blue-500/20 rounded-full loading-bar"></div>
                         </div>
                     </div>
                     <div id="log" class="p-5 flex-1 overflow-y-auto text-[10px] mono space-y-1 no-scrollbar">
-                        <p class="text-slate-600">> System Ready. Add/Select Profile.</p>
+                        <p class="text-slate-600">> Hardware acceleration active. Select account.</p>
                     </div>
                 </div>
             </div>
@@ -181,6 +181,7 @@
         let ws, isRunning = false, soundEnabled = true;
         let accounts = JSON.parse(localStorage.getItem('hunter_accounts') || '[]');
         let totalProfit = 0, lossCount = 0, currentStake = 0, accountBalance = 0;
+        let tickHistory = [];
 
         const winSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
         const lossSound = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg');
@@ -188,10 +189,7 @@
         window.onload = () => {
             renderAccountList();
             const last = localStorage.getItem('hunter_last_acc');
-            if (last && accounts[last]) { 
-                document.getElementById('activeAccount').value = last; 
-                loadSelectedAccount(); 
-            }
+            if (last && accounts[last]) { document.getElementById('activeAccount').value = last; loadSelectedAccount(); }
         };
 
         function renderAccountList() {
@@ -203,17 +201,17 @@
 
         function loadSelectedAccount() {
             const v = document.getElementById('activeAccount').value;
-            if(v === "CLEAR") { if(confirm("Delete profiles?")) { localStorage.clear(); location.reload(); } return; }
-            if(v !== "") { localStorage.setItem('hunter_last_acc', v); log(`Active: ${accounts[v].name}`, 'info'); }
+            if(v === "CLEAR") { if(confirm("Wipe Profiles?")) { localStorage.clear(); location.reload(); } return; }
+            if(v !== "") { localStorage.setItem('hunter_last_acc', v); log(`Profile Loaded: ${accounts[v].name}`, 'info'); }
         }
 
-        function clearLogs() { document.getElementById('log').innerHTML = '<p class="text-slate-600">> Logs cleared.</p>'; }
+        function clearLogs() { document.getElementById('log').innerHTML = '<p class="text-slate-600">> Logs purged.</p>'; }
         function clearHistory() { document.getElementById('historyBody').innerHTML = ''; }
 
         function toggleBot() {
             if (isRunning) return stopBot();
             const idx = document.getElementById('activeAccount').value;
-            if (!idx || idx === "CLEAR") return alert("Select profile!");
+            if (!idx || idx === "CLEAR") return alert("Select profile first!");
             currentStake = parseFloat(document.getElementById('stakeAwal').value);
             initWebSocket(accounts[idx].token);
         }
@@ -223,12 +221,31 @@
             ws.onopen = () => ws.send(JSON.stringify({ authorize: token }));
             ws.onmessage = (msg) => {
                 const data = JSON.parse(msg.data);
-                if (data.error) { log(`Error: ${data.error.message}`, 'loss'); stopBot(); return; }
-                if (data.msg_type === 'authorize') { ws.send(JSON.stringify({ balance: 1, subscribe: 1 })); startBot(); }
-                if (data.msg_type === 'balance') { accountBalance = parseFloat(data.balance.balance); updateUI(); }
+                if (data.error) { log(`API Error: ${data.error.message}`, 'loss'); stopBot(); return; }
+                
+                if (data.msg_type === 'authorize') {
+                    ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+                    const market = document.getElementById('marketSelect').value;
+                    ws.send(JSON.stringify({ ticks: market, subscribe: 1 })); // Sub to ticks for analysis
+                    startBot();
+                }
+
+                if (data.msg_type === 'tick') {
+                    const lastDigit = data.tick.quote.toString().slice(-1);
+                    document.getElementById('statLastDigit').innerText = lastDigit;
+                    tickHistory.push(parseInt(lastDigit));
+                    if(tickHistory.length > 100) tickHistory.shift();
+                }
+
+                if (data.msg_type === 'balance') {
+                    accountBalance = parseFloat(data.balance.balance);
+                    updateUI();
+                }
+
                 if (data.msg_type === 'buy') {
                     ws.send(JSON.stringify({ proposal_open_contract: 1, contract_id: data.buy.contract_id, subscribe: 1 }));
                 }
+
                 if (data.msg_type === 'proposal_open_contract') {
                     const c = data.proposal_open_contract;
                     if (c.is_sold) {
@@ -239,32 +256,46 @@
             };
         }
 
-        function startBot() {
-            isRunning = true;
-            document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('btnAction').innerText = "Stop Session";
-            document.getElementById('btnAction').classList.replace('bg-blue-600', 'bg-red-600');
-            document.getElementById('connBadge').innerText = "Live";
-            document.getElementById('connBadge').className = "px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-[9px] font-black uppercase";
-            sendTrade();
-        }
+        function analyzeMarket() {
+            if (tickHistory.length < 50) { 
+                log(`Gathering data... (${tickHistory.length}/50)`, 'info'); 
+                return null; 
+            }
+            const counts = {};
+            for (let i = 0; i <= 9; i++) counts[i] = 0;
+            tickHistory.forEach(d => counts[d]++);
+            
+            let leastDigit = 0;
+            let minCount = 101;
+            for (let d in counts) {
+                if (counts[d] < minCount) { minCount = counts[d]; leastDigit = d; }
+            }
 
-        function stopBot() {
-            isRunning = false; if(ws) ws.close();
-            document.getElementById('loader').classList.add('hidden');
-            document.getElementById('btnAction').innerText = "Execute Strategy";
-            document.getElementById('btnAction').classList.replace('bg-red-600', 'bg-blue-600');
-            document.getElementById('connBadge').innerText = "OFF";
-            document.getElementById('connBadge').className = "px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase";
+            const prob = (minCount / tickHistory.length) * 100;
+            const limit = parseFloat(document.getElementById('probLimit').value);
+
+            if (prob <= limit) {
+                log(`Target Locked: Digit ${leastDigit} at ${prob.toFixed(1)}% probability.`, 'win');
+                return leastDigit;
+            } else {
+                log(`Market Volatile: Lowest prob is ${prob.toFixed(1)}% (Limit: ${limit}%)`, 'info');
+                return null;
+            }
         }
 
         function sendTrade() {
             if (!isRunning || !ws) return;
-            const pred = document.getElementById('predDigit').value;
-            const market = document.getElementById('marketSelect').value;
-            const ticks = parseInt(document.getElementById('tickCount').value); // Ticks fix
             
-            ws.send(JSON.stringify({
+            const smartDigit = analyzeMarket();
+            if (smartDigit === null) {
+                setTimeout(sendTrade, 2000); // Check again in 2s
+                return;
+            }
+
+            const market = document.getElementById('marketSelect').value;
+            const ticks = parseInt(document.getElementById('tickCount').value); // TICK CHANGER FIXED
+            
+            const payload = {
                 "buy": 1, 
                 "price": parseFloat(currentStake.toFixed(2)),
                 "parameters": { 
@@ -275,10 +306,10 @@
                     "duration": ticks, 
                     "duration_unit": "t", 
                     "symbol": market, 
-                    "barrier": pred.toString() 
+                    "barrier": smartDigit.toString() 
                 }
-            }));
-            log(`Trade: ${market} | Stake: $${currentStake.toFixed(2)} | Ticks: ${ticks}`);
+            };
+            ws.send(JSON.stringify(payload));
         }
 
         function processResult(c) {
@@ -290,19 +321,21 @@
                 lossCount = 0;
                 currentStake = parseFloat(document.getElementById('stakeAwal').value);
                 if(soundEnabled) winSound.play();
-                log(`Win +$${profit.toFixed(2)}`, 'win');
+                log(`Profit: +$${profit.toFixed(2)}`, 'win');
             } else {
                 lossCount++;
                 currentStake = currentStake * mX;
                 if(soundEnabled) lossSound.play();
-                log(`Loss Step ${lossCount}`, 'loss');
+                log(`Martingale Step ${lossCount} ($${currentStake.toFixed(2)})`, 'loss');
             }
 
             updateUI();
             addHistoryRow(c);
             
-            if (totalProfit >= parseFloat(document.getElementById('tp').value) || totalProfit <= (parseFloat(document.getElementById('sl').value) * -1)) {
-                log(`Session Ended (TP/SL)`, 'info');
+            const tp = parseFloat(document.getElementById('tp').value);
+            const sl = parseFloat(document.getElementById('sl').value);
+            if (totalProfit >= tp || totalProfit <= (sl * -1)) {
+                log("Session Complete: TP/SL Reached.", "info");
                 stopBot();
             } else {
                 setTimeout(sendTrade, 3500); 
@@ -333,11 +366,30 @@
             if(tbody.children.length > 20) tbody.lastChild.remove();
         }
 
+        function startBot() {
+            isRunning = true;
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('btnAction').innerText = "Emergency Stop";
+            document.getElementById('btnAction').classList.replace('bg-blue-600', 'bg-red-600');
+            document.getElementById('connBadge').innerText = "Live";
+            document.getElementById('connBadge').className = "px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-[9px] font-black uppercase";
+            sendTrade();
+        }
+
+        function stopBot() {
+            isRunning = false; if(ws) ws.close();
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('btnAction').innerText = "Execute Hunter V3";
+            document.getElementById('btnAction').classList.replace('bg-red-600', 'bg-blue-600');
+            document.getElementById('connBadge').innerText = "OFF";
+            document.getElementById('connBadge').className = "px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase";
+        }
+
         function manualReset() {
             currentStake = parseFloat(document.getElementById('stakeAwal').value);
             lossCount = 0;
             updateUI();
-            log("Manual Reset Complete", "info");
+            log("Stake reset manually.", "info");
         }
 
         function openAccountModal() { document.getElementById('accountModal').classList.replace('hidden', 'flex'); }
