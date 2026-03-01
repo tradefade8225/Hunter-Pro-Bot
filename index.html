@@ -3,245 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hunter V2 | Fixed Terminal</title>
+    <title>Hunter V2 | Pro Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        body { background: #050505; color: #e2e8f0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
-        /* DROPDOWN FIX */
-        select { background-color: #0f172a !important; color: white !important; border: 1px solid rgba(255,255,255,0.1); }
-        select option { background: #1e293b; color: white; padding: 12px; }
-        .win { color: #22c55e; font-weight: 800; }
-        .loss { color: #ef4444; font-weight: 800; }
-        .info { color: #3b82f6; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        select { color-scheme: dark; }
+        select option { background-color: #0f172a !important; color: white !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes sweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .loading-bar { position: relative; overflow: hidden; }
+        .loading-bar::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent); animation: sweep 2s infinite; }
     </style>
 </head>
-<body class="p-3 md:p-8">
+<body class="bg-[#020202] text-slate-300 min-h-screen">
 
-    <div class="max-w-4xl mx-auto space-y-4">
-        
-        <div class="glass p-5 rounded-[2rem] flex justify-between items-center border-b-2 border-blue-500/30">
+    <div class="max-w-7xl mx-auto p-4 md:p-10 space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
             <div>
-                <h1 class="text-2xl font-black italic tracking-tighter text-white">HUNTER <span class="text-blue-500 not-italic">V2</span></h1>
-                <div class="flex items-center gap-2 mt-1">
-                    <span id="dot" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <span id="statusText" class="text-[9px] uppercase font-black text-slate-500">Offline</span>
-                </div>
+                <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter italic">HUNTER <span class="text-blue-500 not-italic">V2</span></h1>
+                <p class="text-slate-500 font-bold text-[9px] tracking-[0.2em] uppercase">Mobile Optimized Terminal</p>
             </div>
-            <select id="activeAccount" onchange="loadSelectedAccount()" class="text-[10px] font-black p-3 rounded-xl outline-none min-w-[120px]">
-                <option value="">SELECT ACCOUNT</option>
-            </select>
-        </div>
-
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="glass p-4 rounded-3xl text-center">
-                <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Profit/Loss</p>
-                <h2 id="statProfit" class="text-xl font-black mono text-white">$0.00</h2>
-            </div>
-            <div class="glass p-4 rounded-3xl text-center">
-                <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Balance</p>
-                <h2 id="statBalance" class="text-xl font-black mono text-white truncate">$0.00</h2>
-            </div>
-            <div class="glass p-4 rounded-3xl text-center">
-                <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Streak</p>
-                <h2 id="statStreak" class="text-xl font-black mono text-orange-500">0</h2>
-            </div>
-            <div class="glass p-4 rounded-3xl text-center">
-                <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Next Trade</p>
-                <h2 id="statNextStake" class="text-xl font-black mono text-blue-400">$1.50</h2>
-            </div>
-        </div>
-
-        <div class="glass p-6 rounded-[2rem] space-y-5">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="space-y-1">
-                    <label class="text-[9px] font-black text-slate-500 ml-1 uppercase">Market</label>
-                    <select id="marketSelect" class="w-full p-4 rounded-2xl text-sm font-bold outline-none">
-                        <option value="R_10">Volatility 10 Index</option>
-                        <option value="R_25">Volatility 25 Index</option>
-                        <option value="R_50">Volatility 50 Index</option>
-                        <option value="R_100">Volatility 100 Index</option>
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <div class="glass flex-1 md:flex-none px-4 py-2 rounded-xl flex items-center justify-between gap-4">
+                    <select id="activeAccount" onchange="loadSelectedAccount()" class="bg-transparent text-xs font-bold text-white outline-none cursor-pointer min-w-[120px]">
+                        <option value="">-- No Account --</option>
                     </select>
+                    <button onclick="openAccountModal()" class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold">+</button>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-black text-slate-500 ml-1 uppercase">Stake</label>
-                        <input type="number" id="stakeAwal" value="1.50" class="w-full p-4 bg-slate-900 border border-white/5 rounded-2xl text-white font-bold outline-none focus:ring-1 ring-blue-500">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[9px] font-black text-slate-500 ml-1 uppercase">Predict</label>
-                        <input type="number" id="predDigit" value="5" class="w-full p-4 bg-slate-900 border border-white/5 rounded-2xl text-white font-bold outline-none focus:ring-1 ring-blue-500">
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col md:flex-row gap-3">
-                <button id="btnAction" onclick="toggleBot()" class="flex-[2] bg-blue-600 hover:bg-blue-500 text-white p-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95">Start Session</button>
-                <button onclick="manualReset()" class="flex-1 bg-white/5 hover:bg-white/10 text-slate-400 p-5 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all">Reset Stake</button>
+                <div id="connBadge" class="px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase">OFF</div>
             </div>
         </div>
 
-        <div class="glass rounded-[2rem] overflow-hidden flex flex-col h-60">
-            <div class="px-6 py-3 bg-white/5 border-b border-white/5 text-[8px] font-black uppercase text-slate-500 tracking-widest flex justify-between">
-                System Console <span id="logClock">--:--:--</span>
+        <div class="grid grid-cols-12 gap-4 md:gap-8">
+            <div class="col-span-12 lg:col-span-4 space-y-4">
+                <div class="glass p-6 rounded-3xl space-y-5">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-[10px] font-black uppercase text-blue-500">Config Panel</h2>
+                        <button onclick="toggleSound()" id="soundBtn" class="text-[9px] font-bold text-slate-600 uppercase">🔊 ON</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Market</label>
+                            <select id="marketSelect" class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-sm font-bold text-white">
+                                <option value="1HZ10V">Volatility 10 (1s)</option>
+                                <option value="1HZ25V">Volatility 25 (1s)</option>
+                                <option value="1HZ50V">Volatility 50 (1s)</option>
+                                <option value="1HZ100V">Volatility 100 (1s)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="number" id="stakeAwal" value="1.5" step="0.1" class="bg-slate-900 p-3 rounded-xl text-white font-bold text-sm" placeholder="Stake">
+                            <input type="number" id="predDigit" value="5" min="0" max="9" class="bg-slate-900 p-3 rounded-xl text-white font-bold text-sm" placeholder="Predict">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <input type="number" id="martingaleX" value="11" step="0.1" class="bg-slate-900 p-3 rounded-xl text-blue-400 font-bold text-sm" placeholder="Multiplier">
+                            <input type="number" id="tickCount" value="1" min="1" max="10" class="bg-slate-900 p-3 rounded-xl text-white font-bold text-sm" placeholder="Ticks">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-green-500/5 p-3 rounded-xl border border-green-500/10">
+                                <span class="text-[8px] text-green-500 font-black block">TP</span>
+                                <input type="number" id="tp" value="10" class="bg-transparent text-white font-black w-full outline-none">
+                            </div>
+                            <div class="bg-red-500/5 p-3 rounded-xl border border-red-500/10">
+                                <span class="text-[8px] text-red-500 font-black block">SL</span>
+                                <input type="number" id="sl" value="100" class="bg-transparent text-white font-black w-full outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btnAction" onclick="toggleBot()" class="w-full bg-blue-600 py-4 rounded-2xl text-white font-black uppercase text-[11px] tracking-widest">Execute Strategy</button>
+                    <button onclick="manualReset()" class="w-full bg-white/5 py-2 rounded-xl text-slate-500 font-bold text-[9px] uppercase">Reset Stake</button>
+                </div>
             </div>
-            <div id="log" class="p-5 flex-1 overflow-y-auto font-mono text-[10px] space-y-1 scroll-smooth">
-                <div class="text-slate-600">> Select a profile and hit Start.</div>
+
+            <div class="col-span-12 lg:col-span-8 space-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="glass p-5 rounded-3xl border-b-2 border-blue-600">
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Profit</p>
+                        <p id="statProfit" class="text-xl font-black text-white mono">$0.00</p>
+                    </div>
+                    <div class="glass p-5 rounded-3xl">
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Balance</p>
+                        <p id="statBalance" class="text-sm font-black text-white truncate mono">$0.00</p>
+                    </div>
+                    <div class="glass p-5 rounded-3xl">
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Streak</p>
+                        <p id="statStreak" class="text-xl font-black text-orange-500 mono">0</p>
+                    </div>
+                    <div class="glass p-5 rounded-3xl">
+                        <p class="text-[8px] font-black text-slate-500 uppercase">Stake</p>
+                        <p id="statNextStake" class="text-sm font-black text-blue-400 mono">$1.50</p>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl h-[300px] flex flex-col overflow-hidden">
+                    <div class="bg-white/5 p-3 px-5 flex justify-between items-center border-b border-white/5">
+                        <span class="text-[8px] font-black text-slate-400 uppercase">Live Logs</span>
+                        <div id="loader" class="hidden w-16 h-1 bg-blue-500/20 rounded-full loading-bar"></div>
+                    </div>
+                    <div id="log" class="p-5 flex-1 overflow-y-auto text-[10px] mono space-y-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="accountModal" class="fixed inset-0 bg-black/90 hidden items-center justify-center p-4 z-50">
+        <div class="glass p-8 rounded-3xl w-full max-w-sm">
+            <h3 class="text-white font-black mb-4 uppercase">Add Profile</h3>
+            <div class="space-y-3">
+                <input type="text" id="newAccName" placeholder="Label" class="w-full bg-slate-900 p-3 rounded-xl text-white outline-none border border-white/10">
+                <input type="password" id="newAccToken" placeholder="API Token" class="w-full bg-slate-900 p-3 rounded-xl text-white outline-none border border-white/10">
+                <div class="flex gap-2">
+                    <button onclick="saveNewAccount()" class="flex-1 bg-blue-600 py-3 rounded-xl text-white font-bold text-[10px] uppercase">Save</button>
+                    <button onclick="closeAccountModal()" class="flex-1 bg-white/5 py-3 rounded-xl text-slate-400 font-bold text-[10px] uppercase">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const APP_ID = '1089';
-        let ws, isRunning = false;
+        let ws, isRunning = false, soundEnabled = true;
         let accounts = JSON.parse(localStorage.getItem('hunter_accounts') || '[]');
         let totalProfit = 0, lossCount = 0, currentStake = 0, accountBalance = 0;
 
-        // Populate accounts
-        const selAcc = document.getElementById('activeAccount');
-        accounts.forEach((acc, i) => { selAcc.innerHTML += `<option value="${i}">${acc.name.toUpperCase()}</option>`; });
+        const winSound = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+        const lossSound = new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg');
+
+        window.onload = () => {
+            renderAccountList();
+            const last = localStorage.getItem('hunter_last_acc');
+            if (last && accounts[last]) { document.getElementById('activeAccount').value = last; }
+        };
+
+        function renderAccountList() {
+            const select = document.getElementById('activeAccount');
+            select.innerHTML = '<option value="">-- Profiles --</option>';
+            accounts.forEach((acc, i) => { select.innerHTML += `<option value="${i}">${acc.name}</option>`; });
+        }
 
         function toggleBot() {
             if (isRunning) return stopBot();
-            const idx = selAcc.value;
-            if (!idx) return alert("Select an account first!");
+            const idx = document.getElementById('activeAccount').value;
+            if (!idx) return alert("Select an account.");
+            
             currentStake = parseFloat(document.getElementById('stakeAwal').value);
-            connect(accounts[idx].token);
+            initWebSocket(accounts[idx].token);
         }
 
-        function connect(token) {
+        function initWebSocket(token) {
             ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${APP_ID}`);
             
-            ws.onopen = () => ws.send(JSON.stringify({ authorize: token }));
+            ws.onopen = () => {
+                log("Connecting to network...", "info");
+                ws.send(JSON.stringify({ authorize: token }));
+            };
 
             ws.onmessage = (msg) => {
                 const data = JSON.parse(msg.data);
                 
                 if (data.error) {
-                    log(`Error: ${data.error.message}`, 'loss');
-                    stopBot();
-                    return;
+                    log(data.error.message, 'loss');
+                    return stopBot();
                 }
 
                 switch (data.msg_type) {
                     case 'authorize':
-                        log(`Authorized: ${data.authorize.loginid}`, 'info');
+                        log(`Authorized: ${data.authorize.email}`, 'info');
                         ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-                        isRunning = true;
-                        updateStatus(true);
-                        sendProposal();
+                        startBot();
                         break;
-                    
                     case 'balance':
                         accountBalance = data.balance.balance;
                         updateUI();
                         break;
-
-                    case 'proposal':
-                        log(`Proposal OK. Executing $${currentStake.toFixed(2)}...`);
-                        ws.send(JSON.stringify({ buy: data.proposal.id, price: currentStake }));
-                        break;
-
                     case 'buy':
-                        log(`Order Placed. Waiting for tick...`, 'info');
-                        // Subscribe to the result
-                        ws.send(JSON.stringify({ 
-                            proposal_open_contract: 1, 
-                            contract_id: data.buy.contract_id, 
-                            subscribe: 1 
-                        }));
+                        log(`Order Placed: ${data.buy.contract_id}`);
+                        // Subscribe to the specific contract for results
+                        ws.send(JSON.stringify({ proposal_open_contract: 1, contract_id: data.buy.contract_id, subscribe: 1 }));
                         break;
-
                     case 'proposal_open_contract':
-                        const contract = data.proposal_open_contract;
-                        if (contract.is_sold) {
-                            // Immediately unsubscribe to prevent loop
-                            ws.send(JSON.stringify({ forget: contract.subscription_id }));
-                            processResult(contract);
+                        if (data.proposal_open_contract.is_sold) {
+                            processResult(data.proposal_open_contract);
                         }
                         break;
                 }
             };
         }
 
-        function sendProposal() {
-            if (!isRunning) return;
-            const market = document.getElementById('marketSelect').value;
-            const pred = document.getElementById('predDigit').value;
-            
-            ws.send(JSON.stringify({
-                proposal: 1,
-                amount: parseFloat(currentStake.toFixed(2)),
-                basis: 'stake',
-                contract_type: 'DIGITDIFF',
-                currency: 'USD',
-                duration: 1,
-                duration_unit: 't',
-                symbol: market,
-                barrier: pred.toString()
-            }));
-        }
-
-        function processResult(c) {
-            const p = parseFloat(c.profit);
-            totalProfit += p;
-            
-            if (p > 0) {
-                log(`WIN: +$${p.toFixed(2)}`, 'win');
-                lossCount = 0;
-                currentStake = parseFloat(document.getElementById('stakeAwal').value);
-            } else {
-                log(`LOSS: -$${Math.abs(p).toFixed(2)}`, 'loss');
-                lossCount++;
-                currentStake = currentStake * 11;
-            }
-
-            updateUI();
-            // Wait 3.5 seconds before next trade to let market breathe
-            setTimeout(sendProposal, 3500);
+        function startBot() {
+            isRunning = true;
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('btnAction').innerText = "Stop Session";
+            document.getElementById('btnAction').className = "w-full bg-red-600 py-4 rounded-2xl text-white font-black uppercase text-[11px] tracking-widest";
+            document.getElementById('connBadge').innerText = "Live";
+            document.getElementById('connBadge').classList.replace('bg-red-500/10', 'bg-green-500/10');
+            document.getElementById('connBadge').classList.replace('text-red-500', 'text-green-500');
+            sendTrade();
         }
 
         function stopBot() {
             isRunning = false;
             if(ws) ws.close();
-            updateStatus(false);
-            log("Session stopped by user.", 'info');
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('btnAction').innerText = "Execute Strategy";
+            document.getElementById('btnAction').className = "w-full bg-blue-600 py-4 rounded-2xl text-white font-black uppercase text-[11px] tracking-widest";
+            document.getElementById('connBadge').innerText = "OFF";
+            document.getElementById('connBadge').className = "px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase";
         }
 
-        function manualReset() {
-            currentStake = parseFloat(document.getElementById('stakeAwal').value);
-            lossCount = 0;
+        function sendTrade() {
+            if (!isRunning) return;
+            const pred = document.getElementById('predDigit').value;
+            const market = document.getElementById('marketSelect').value;
+            const ticks = parseInt(document.getElementById('tickCount').value);
+
+            ws.send(JSON.stringify({
+                buy: 1,
+                price: parseFloat(currentStake.toFixed(2)),
+                parameters: {
+                    amount: parseFloat(currentStake.toFixed(2)),
+                    basis: "stake",
+                    contract_type: "DIGITDIFF",
+                    currency: "USD",
+                    duration: ticks,
+                    duration_unit: "t",
+                    symbol: market,
+                    barrier: pred.toString()
+                }
+            }));
+        }
+
+        function processResult(c) {
+            const profit = parseFloat(c.profit);
+            totalProfit += profit;
+            
+            if (profit > 0) {
+                lossCount = 0;
+                currentStake = parseFloat(document.getElementById('stakeAwal').value);
+                if(soundEnabled) winSound.play();
+                log(`WIN: +$${profit.toFixed(2)}`, 'win');
+            } else {
+                lossCount++;
+                const mX = parseFloat(document.getElementById('martingaleX').value);
+                currentStake = currentStake * mX;
+                if(soundEnabled) lossSound.play();
+                log(`LOSS: -$${Math.abs(profit).toFixed(2)} (Step ${lossCount})`, 'loss');
+            }
+
             updateUI();
-            log("Stake reset to base.", 'info');
+            
+            if (totalProfit >= parseFloat(document.getElementById('tp').value) || totalProfit <= (parseFloat(document.getElementById('sl').value) * -1)) {
+                log("Target Reached. System Halted.", "info");
+                stopBot();
+            } else {
+                setTimeout(sendTrade, 3000);
+            }
         }
 
         function updateUI() {
-            document.getElementById('statProfit').innerText = `$${totalProfit.toFixed(2)}`;
-            document.getElementById('statProfit').className = `text-xl font-black mono ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
-            document.getElementById('statBalance').innerText = `$${accountBalance.toLocaleString()}`;
+            const p = document.getElementById('statProfit');
+            p.innerText = `${totalProfit >= 0 ? '+' : ''}$${totalProfit.toFixed(2)}`;
+            p.className = `text-xl font-black mono ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
             document.getElementById('statStreak').innerText = lossCount;
             document.getElementById('statNextStake').innerText = `$${currentStake.toFixed(2)}`;
-        }
-
-        function updateStatus(on) {
-            document.getElementById('btnAction').innerText = on ? "STOP SESSION" : "START SESSION";
-            document.getElementById('btnAction').className = on ? 
-                document.getElementById('btnAction').className.replace('bg-blue-600', 'bg-red-600') : 
-                document.getElementById('btnAction').className.replace('bg-red-600', 'bg-blue-600');
-            document.getElementById('dot').className = `w-2 h-2 rounded-full ${on ? 'bg-green-500' : 'bg-red-500'} animate-pulse`;
-            document.getElementById('statusText').innerText = on ? "Live Connection" : "Offline";
-            document.getElementById('statusText').className = `text-[9px] uppercase font-black ${on ? 'text-green-500' : 'text-slate-500'}`;
+            document.getElementById('statBalance').innerText = `$${parseFloat(accountBalance).toLocaleString()}`;
         }
 
         function log(m, t) {
             const logBox = document.getElementById('log');
             const div = document.createElement('div');
-            div.className = t || '';
-            div.innerHTML = `<span class="opacity-30 mr-2">${new Date().toLocaleTimeString()}</span> ${m}`;
+            div.className = `${t === 'win' ? 'text-green-400' : t === 'loss' ? 'text-red-400 font-bold' : t === 'info' ? 'text-blue-400' : ''}`;
+            div.innerHTML = `<span class="opacity-20 mr-1">[${new Date().toLocaleTimeString()}]</span> ${m}`;
             logBox.prepend(div);
         }
 
-        setInterval(() => { document.getElementById('logClock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        function openAccountModal() { document.getElementById('accountModal').classList.replace('hidden', 'flex'); }
+        function closeAccountModal() { document.getElementById('accountModal').classList.replace('flex', 'hidden'); }
+        function saveNewAccount() {
+            const n = document.getElementById('newAccName').value, t = document.getElementById('newAccToken').value;
+            if(!n || !t) return;
+            accounts.push({ name: n, token: t });
+            localStorage.setItem('hunter_accounts', JSON.stringify(accounts));
+            renderAccountList(); closeAccountModal();
+        }
+        function manualReset() {
+            currentStake = parseFloat(document.getElementById('stakeAwal').value);
+            lossCount = 0;
+            updateUI();
+            log("Stake Reset to Base.", "info");
+        }
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 ON" : "🔇 OFF";
+        }
     </script>
 </body>
 </html>
