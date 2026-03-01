@@ -19,11 +19,14 @@
         .win { color: #4ade80; }
         .loss { color: #f87171; font-weight: 800; }
         .info { color: #60a5fa; }
+        .btn-clear { font-size: 9px; font-weight: 900; text-transform: uppercase; padding: 5px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; transition: all 0.2s; }
+        .btn-clear:hover { background: rgba(255,255,255,0.1); color: white; }
     </style>
 </head>
 <body class="bg-[#020202] text-slate-300 min-h-screen">
 
     <div class="max-w-7xl mx-auto p-4 md:p-10 space-y-6">
+        
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 border-b border-white/5 pb-6">
             <div class="text-center md:text-left">
                 <h1 class="text-3xl md:text-5xl font-black text-white tracking-tighter italic">HUNTER <span class="text-blue-500 not-italic">V2</span></h1>
@@ -42,6 +45,7 @@
         </div>
 
         <div class="grid grid-cols-12 gap-4 md:gap-8">
+            
             <div class="col-span-12 lg:col-span-4 space-y-4">
                 <div class="glass p-6 md:p-8 rounded-3xl space-y-5 border-t border-white/10">
                     <div class="flex justify-between items-center">
@@ -52,7 +56,7 @@
                     <div class="grid grid-cols-1 gap-4">
                         <div class="space-y-1">
                             <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Market</label>
-                            <select id="marketSelect" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none focus:ring-1 ring-blue-500">
+                            <select id="marketSelect" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
                                 <option value="1HZ10V">Volatility 10 (1s)</option>
                                 <option value="1HZ25V">Volatility 25 (1s)</option>
                                 <option value="1HZ50V">Volatility 50 (1s)</option>
@@ -77,7 +81,7 @@
                                 <input type="number" id="martingaleX" value="11" step="0.5" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-blue-400 outline-none">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Ticks</label>
+                                <label class="text-[9px] font-black uppercase text-slate-500 ml-1">Ticks (Duration)</label>
                                 <input type="number" id="tickCount" value="1" min="1" max="10" class="w-full bg-slate-900 border border-white/10 rounded-xl p-4 text-sm font-bold text-white outline-none">
                             </div>
                         </div>
@@ -124,10 +128,13 @@
                 <div class="glass rounded-3xl overflow-hidden flex flex-col h-[280px] md:h-[350px]">
                     <div class="bg-white/5 p-3 px-5 border-b border-white/5 flex justify-between items-center">
                         <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Live Logs</span>
-                        <div id="loader" class="hidden w-16 h-1 bg-white/10 rounded-full loading-bar"></div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="clearLogs()" class="btn-clear">Clear Logs</button>
+                            <div id="loader" class="hidden w-12 h-1 bg-blue-500/20 rounded-full loading-bar"></div>
+                        </div>
                     </div>
                     <div id="log" class="p-5 flex-1 overflow-y-auto text-[10px] mono space-y-1 no-scrollbar">
-                        <p class="text-slate-600">> Hardware acceleration active. Select account.</p>
+                        <p class="text-slate-600">> System Ready. Add/Select Profile.</p>
                     </div>
                 </div>
             </div>
@@ -136,6 +143,7 @@
         <div class="glass rounded-3xl overflow-hidden">
             <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
                 <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Execution History</h3>
+                <button onclick="clearHistory()" class="btn-clear">Clear History</button>
             </div>
             <div class="overflow-x-auto no-scrollbar">
                 <table class="w-full text-left min-w-[500px]">
@@ -195,27 +203,17 @@
 
         function loadSelectedAccount() {
             const v = document.getElementById('activeAccount').value;
-            if(v === "CLEAR") { 
-                if(confirm("Delete all accounts?")) { localStorage.clear(); location.reload(); } 
-                return; 
-            }
-            if(v !== "") { 
-                localStorage.setItem('hunter_last_acc', v); 
-                log(`Active Profile: ${accounts[v].name}`, 'info'); 
-            }
+            if(v === "CLEAR") { if(confirm("Delete profiles?")) { localStorage.clear(); location.reload(); } return; }
+            if(v !== "") { localStorage.setItem('hunter_last_acc', v); log(`Active: ${accounts[v].name}`, 'info'); }
         }
 
-        function manualReset() {
-            currentStake = parseFloat(document.getElementById('stakeAwal').value);
-            lossCount = 0;
-            updateUI();
-            log("Manual stake reset.", 'info');
-        }
+        function clearLogs() { document.getElementById('log').innerHTML = '<p class="text-slate-600">> Logs cleared.</p>'; }
+        function clearHistory() { document.getElementById('historyBody').innerHTML = ''; }
 
         function toggleBot() {
             if (isRunning) return stopBot();
             const idx = document.getElementById('activeAccount').value;
-            if (!idx || idx === "CLEAR") return alert("Select an account first.");
+            if (!idx || idx === "CLEAR") return alert("Select profile!");
             currentStake = parseFloat(document.getElementById('stakeAwal').value);
             initWebSocket(accounts[idx].token);
         }
@@ -225,24 +223,16 @@
             ws.onopen = () => ws.send(JSON.stringify({ authorize: token }));
             ws.onmessage = (msg) => {
                 const data = JSON.parse(msg.data);
-                if (data.error) { log(`API Error: ${data.error.message}`, 'loss'); stopBot(); return; }
-                
-                if (data.msg_type === 'authorize') { 
-                    ws.send(JSON.stringify({ balance: 1, subscribe: 1 })); 
-                    startBot(); 
-                }
-                if (data.msg_type === 'balance') { 
-                    accountBalance = parseFloat(data.balance.balance); 
-                    updateUI(); 
-                }
+                if (data.error) { log(`Error: ${data.error.message}`, 'loss'); stopBot(); return; }
+                if (data.msg_type === 'authorize') { ws.send(JSON.stringify({ balance: 1, subscribe: 1 })); startBot(); }
+                if (data.msg_type === 'balance') { accountBalance = parseFloat(data.balance.balance); updateUI(); }
                 if (data.msg_type === 'buy') {
-                    // Subscribe to open contract to wait for result
                     ws.send(JSON.stringify({ proposal_open_contract: 1, contract_id: data.buy.contract_id, subscribe: 1 }));
                 }
                 if (data.msg_type === 'proposal_open_contract') {
                     const c = data.proposal_open_contract;
                     if (c.is_sold) {
-                        ws.send(JSON.stringify({ forget: data.subscription.id }));
+                        if(data.subscription) ws.send(JSON.stringify({ forget: data.subscription.id }));
                         processResult(c);
                     }
                 }
@@ -269,10 +259,10 @@
         }
 
         function sendTrade() {
-            if (!isRunning) return;
+            if (!isRunning || !ws) return;
             const pred = document.getElementById('predDigit').value;
             const market = document.getElementById('marketSelect').value;
-            const ticks = parseInt(document.getElementById('tickCount').value);
+            const ticks = parseInt(document.getElementById('tickCount').value); // Ticks fix
             
             ws.send(JSON.stringify({
                 "buy": 1, 
@@ -288,7 +278,7 @@
                     "barrier": pred.toString() 
                 }
             }));
-            log(`Opening trade: ${market} @ $${currentStake.toFixed(2)}`);
+            log(`Trade: ${market} | Stake: $${currentStake.toFixed(2)} | Ticks: ${ticks}`);
         }
 
         function processResult(c) {
@@ -311,17 +301,11 @@
             updateUI();
             addHistoryRow(c);
             
-            const target = parseFloat(document.getElementById('tp').value);
-            const stoploss = parseFloat(document.getElementById('sl').value);
-
-            if (totalProfit >= target) {
-                log(`Target Profit Reached!`, 'info');
-                stopBot();
-            } else if (totalProfit <= (stoploss * -1)) {
-                log(`Stop Loss Reached!`, 'loss');
+            if (totalProfit >= parseFloat(document.getElementById('tp').value) || totalProfit <= (parseFloat(document.getElementById('sl').value) * -1)) {
+                log(`Session Ended (TP/SL)`, 'info');
                 stopBot();
             } else {
-                setTimeout(sendTrade, 3500); // Anti Rate-limit delay
+                setTimeout(sendTrade, 3500); 
             }
         }
 
@@ -346,33 +330,33 @@
                 <td class="p-5 text-right font-black ${profit > 0 ? 'text-green-400' : 'text-red-400'}">${profit > 0 ? '+' : ''}$${profit.toFixed(2)}</td>
             `;
             tbody.prepend(row);
-            if(tbody.children.length > 15) tbody.lastChild.remove();
+            if(tbody.children.length > 20) tbody.lastChild.remove();
+        }
+
+        function manualReset() {
+            currentStake = parseFloat(document.getElementById('stakeAwal').value);
+            lossCount = 0;
+            updateUI();
+            log("Manual Reset Complete", "info");
         }
 
         function openAccountModal() { document.getElementById('accountModal').classList.replace('hidden', 'flex'); }
         function closeAccountModal() { document.getElementById('accountModal').classList.replace('flex', 'hidden'); }
-        
         function saveNewAccount() {
             const n = document.getElementById('newAccName').value, t = document.getElementById('newAccToken').value;
             if(!n || !t) return;
             accounts.push({ name: n, token: t });
             localStorage.setItem('hunter_accounts', JSON.stringify(accounts));
-            renderAccountList(); 
-            closeAccountModal();
+            renderAccountList(); closeAccountModal();
         }
-
-        function toggleSound() { 
-            soundEnabled = !soundEnabled; 
-            document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 ON" : "🔇 OFF"; 
-        }
-
+        function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('soundBtn').innerText = soundEnabled ? "🔊 ON" : "🔇 OFF"; }
         function log(m, t) {
             const logBox = document.getElementById('log');
             const div = document.createElement('div');
             div.className = `${t === 'win' ? 'win' : t === 'loss' ? 'loss' : t === 'info' ? 'info' : ''}`;
             div.innerHTML = `<span class="opacity-20 mr-1">[${new Date().toLocaleTimeString()}]</span> ${m}`;
             logBox.prepend(div);
-            if(logBox.children.length > 30) logBox.lastChild.remove();
+            if(logBox.children.length > 50) logBox.lastChild.remove();
         }
     </script>
 </body>
