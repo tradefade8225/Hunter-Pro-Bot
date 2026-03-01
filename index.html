@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hunter V3.5 | Master Edition</title>
+    <title>Hunter V3.8 | Dropdown Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: #020202; color: #cbd5e1; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background: #020202; color: #cbd5e1; }
         .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .win { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
-        .loss { color: #f87171; }
-        .info { color: #60a5fa; }
+        .win { color: #4ade80; } .loss { color: #f87171; } .info { color: #60a5fa; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='C19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; }
-        .btn-utility { font-size: 9px; font-weight: 900; color: #64748b; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.05); padding: 5px 10px; border-radius: 8px; transition: all 0.2s; }
-        .btn-utility:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+        .btn-master { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-master:active { transform: scale(0.95); opacity: 0.8; }
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='C19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1rem; }
     </style>
 </head>
 <body class="p-4 lg:p-10">
@@ -24,12 +22,12 @@
     <div class="max-w-7xl mx-auto space-y-6">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/5 pb-8">
             <div>
-                <h1 class="text-4xl font-black text-white italic tracking-tighter">HUNTER <span class="text-blue-500">V3.5</span></h1>
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Master Logic • High-Speed Purge</p>
+                <h1 class="text-4xl font-black text-white italic tracking-tighter">HUNTER <span class="text-blue-500">V3.8</span></h1>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Master Logic • Precision Dropdowns</p>
             </div>
             <div class="flex gap-3 w-full md:w-auto">
-                <select id="activeAccount" onchange="loadSelectedAccount()" class="glass flex-1 md:flex-none rounded-xl px-5 py-3 text-xs font-bold text-white outline-none min-w-[160px] border-blue-500/20">
-                    <option value="">-- Profile --</option>
+                <select id="activeAccount" onchange="loadSelectedAccount()" class="glass flex-1 md:flex-none rounded-xl px-5 py-3 text-xs font-bold text-white outline-none border-blue-500/20">
+                    <option value="">-- Select Profile --</option>
                 </select>
                 <div id="connBadge" class="px-5 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase flex items-center">Offline</div>
             </div>
@@ -37,102 +35,87 @@
 
         <div class="grid grid-cols-12 gap-6">
             <div class="col-span-12 lg:col-span-4 space-y-4">
-                <div class="glass p-8 rounded-[2.5rem] space-y-6 shadow-2xl">
-                    <div class="space-y-4">
-                        <h2 class="text-[11px] font-black text-blue-500 uppercase tracking-widest flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span> Engine Config
-                        </h2>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Target Profit</label>
-                                <input type="number" id="targetProfit" value="10.00" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Safety Floor</label>
-                                <input type="number" id="minBalance" value="50.00" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
-                            </div>
-                        </div>
-
+                <div class="glass p-8 rounded-[2.5rem] space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="text-[9px] font-black text-blue-400 uppercase ml-1">Probability Gate</label>
-                            <select id="probLimit" class="w-full bg-slate-900 border border-blue-500/30 rounded-2xl p-4 text-sm font-black text-white outline-none">
-                                <option value="5">5% (Ultra-Safe)</option>
-                                <option value="8" selected>8% (Balanced)</option>
-                                <option value="12">12% (Aggressive)</option>
-                                <option value="15">15% (Extreme)</option>
+                            <label class="text-[9px] font-black text-slate-500 uppercase">Target ($)</label>
+                            <input type="number" id="targetProfit" value="10.00" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-500 uppercase">Floor ($)</label>
+                            <input type="number" id="minBalance" value="50.00" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-500 uppercase">Base Stake</label>
+                            <input type="number" id="stakeAwal" value="1.00" step="0.5" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-blue-400 uppercase">Martingale X</label>
+                            <select id="martingaleX" class="w-full bg-slate-900 border border-blue-500/30 rounded-2xl p-4 text-sm font-black text-white outline-none">
+                                <option value="5">5x (Partial Recovery)</option>
+                                <option value="8">8x (Moderate Survival)</option>
+                                <option value="11" selected>11x (Full Recovery)</option>
+                                <option value="12">12x (Aggressive)</option>
+                                <option value="15">15x (Extreme Risk)</option>
                             </select>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Initial Stake</label>
-                                <input type="number" id="stakeAwal" value="1.00" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-black text-slate-500 uppercase ml-1">Ticks</label>
-                                <input type="number" id="tickCount" value="1" min="1" max="10" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
-                            </div>
-                        </div>
-
-                        <select id="marketSelect" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-bold text-white outline-none">
-                            <option value="1HZ100V">Volatility 100 (1s)</option>
-                            <option value="1HZ10V">Volatility 10 (1s)</option>
-                            <option value="1HZ25V">Volatility 25 (1s)</option>
-                            <option value="1HZ50V">Volatility 50 (1s)</option>
-                        </select>
-
-                        <button id="btnAction" onclick="toggleBot()" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-[1.5rem] font-black text-white text-[12px] uppercase tracking-widest transition-all active:scale-[0.98] shadow-xl shadow-blue-600/30">Ignite Master Engine</button>
                     </div>
+
+                    <select id="probLimit" class="w-full bg-slate-900 border border-white/10 rounded-2xl p-4 text-sm font-black text-white outline-none">
+                        <option value="8">8% Prob Gate (Balanced)</option>
+                        <option value="5">5% Prob Gate (Safe)</option>
+                        <option value="12">12% Prob Gate (Risky)</option>
+                    </select>
+
+                    <button id="btnAction" onclick="toggleBot()" class="w-full bg-blue-600 py-5 rounded-[1.5rem] font-black text-white text-[12px] uppercase tracking-widest btn-master shadow-lg shadow-blue-600/20">Start Engine</button>
                 </div>
             </div>
 
             <div class="col-span-12 lg:col-span-8 space-y-6">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="glass p-6 rounded-[2rem] border-l-4 border-blue-500">
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="glass p-6 rounded-[2rem] border-l-2 border-blue-500">
                         <p class="text-[9px] font-black text-slate-500 uppercase">Balance</p>
-                        <p id="statBalance" class="text-2xl font-black mono text-white truncate">$0.00</p>
+                        <p id="statBalance" class="text-xl font-black mono text-white truncate">$0.00</p>
                     </div>
                     <div class="glass p-6 rounded-[2rem]">
-                        <p class="text-[9px] font-black text-slate-500 uppercase">Session</p>
-                        <p id="statProfit" class="text-2xl font-black mono text-white truncate">$0.00</p>
+                        <p class="text-[9px] font-black text-slate-500 uppercase">Profit</p>
+                        <p id="statProfit" class="text-xl font-black mono text-white">$0.00</p>
                     </div>
                     <div class="glass p-6 rounded-[2rem]">
                         <p class="text-[9px] font-black text-slate-500 uppercase">Digit</p>
-                        <p id="statLastDigit" class="text-2xl font-black mono text-blue-400">--</p>
+                        <p id="statLastDigit" class="text-xl font-black mono text-blue-400">--</p>
                     </div>
-                    <div class="glass p-6 rounded-[2rem] border-l-4 border-orange-500">
+                    <div class="glass p-6 rounded-[2rem]">
                         <p class="text-[9px] font-black text-slate-500 uppercase">Next</p>
-                        <p id="statNextStake" class="text-2xl font-black mono text-white truncate">$1.00</p>
+                        <p id="statNextStake" class="text-xl font-black mono text-white">$1.00</p>
                     </div>
                 </div>
 
-                <div class="glass rounded-[2.5rem] overflow-hidden flex flex-col h-[400px]">
-                    <div class="p-5 px-8 border-b border-white/5 flex justify-between items-center bg-white/5">
-                        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Master Journal</h3>
-                        <button onclick="clearJournal()" class="btn-utility">Clear Journal</button>
+                <div class="glass rounded-[2.5rem] overflow-hidden flex flex-col h-[350px]">
+                    <div class="p-4 px-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+                        <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Live Journal</span>
+                        <div class="flex gap-2">
+                            <button onclick="clearJournal()" class="text-[9px] font-black text-slate-500 hover:text-white uppercase border border-white/10 px-3 py-1 rounded-lg">Clear Feed</button>
+                            <button onclick="clearAudit()" class="text-[9px] font-black text-slate-500 hover:text-white uppercase border border-white/10 px-3 py-1 rounded-lg">Clear Audit</button>
+                        </div>
                     </div>
-                    <div id="log" class="p-8 flex-1 overflow-y-auto text-[11px] mono space-y-2 no-scrollbar">
-                        <p class="text-slate-600">> Ready for high-speed operation.</p>
-                    </div>
+                    <div id="log" class="p-8 flex-1 overflow-y-auto text-[11px] mono space-y-2 no-scrollbar scroll-smooth"></div>
                 </div>
             </div>
         </div>
 
-        <div class="glass rounded-[2.5rem] overflow-hidden shadow-2xl">
-            <div class="p-6 px-8 border-b border-white/5 flex justify-between items-center bg-white/5">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Transaction Audit</h3>
-                <button onclick="clearAudit()" class="btn-utility">Clear Audit</button>
-            </div>
+        <div class="glass rounded-[2.5rem] overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead class="text-[9px] font-black text-slate-500 uppercase bg-black/20">
                         <tr>
-                            <th class="p-6">Timestamp</th>
-                            <th class="p-6">Market</th>
+                            <th class="p-6">Time</th>
                             <th class="p-6">Prediction</th>
                             <th class="p-6">Stake</th>
-                            <th class="p-6 text-right">Net Profit</th>
+                            <th class="p-6 text-right">Result</th>
                         </tr>
                     </thead>
                     <tbody id="historyBody" class="text-[11px] font-bold divide-y divide-white/5"></tbody>
@@ -142,55 +125,46 @@
     </div>
 
     <div id="accountModal" class="fixed inset-0 bg-black/95 hidden items-center justify-center p-6 z-50 backdrop-blur-md">
-        <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10 shadow-3xl">
-            <h3 class="text-2xl font-black text-white mb-8 uppercase italic tracking-tighter">Add Profile</h3>
-            <div class="space-y-5">
-                <input type="text" id="newAccName" placeholder="Profile Name" class="w-full bg-slate-900 border border-white/10 p-5 rounded-2xl outline-none text-white font-bold">
-                <input type="password" id="newAccToken" placeholder="Deriv API Token" class="w-full bg-slate-900 border border-white/10 p-5 rounded-2xl outline-none text-white font-bold">
-                <div class="flex gap-3 pt-4">
-                    <button onclick="saveNewAccount()" class="flex-1 bg-blue-600 py-5 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest">Save</button>
-                    <button onclick="closeAccountModal()" class="flex-1 bg-white/5 py-5 rounded-2xl font-black text-slate-500 text-[11px] uppercase">Cancel</button>
-                </div>
+        <div class="glass p-10 rounded-[3rem] w-full max-w-sm border border-white/10">
+            <h3 class="text-xl font-black text-white mb-6 uppercase italic">Add Profile</h3>
+            <div class="space-y-4">
+                <input type="text" id="newAccName" placeholder="Name" class="w-full bg-slate-900 border border-white/10 p-4 rounded-xl outline-none text-white focus:border-blue-500 transition-colors">
+                <input type="password" id="newAccToken" placeholder="Deriv API Token" class="w-full bg-slate-900 border border-white/10 p-4 rounded-xl outline-none text-white focus:border-blue-500 transition-colors">
+                <button onclick="saveNewAccount()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black text-white uppercase tracking-widest text-xs transition-colors">Save Profile</button>
+                <button onclick="closeAccountModal()" class="w-full text-slate-500 text-[10px] font-bold uppercase hover:text-white transition-colors">Cancel</button>
             </div>
         </div>
     </div>
 
-    <button onclick="openAccountModal()" class="fixed bottom-8 right-8 w-16 h-16 bg-blue-600 rounded-full text-white font-black shadow-3xl z-40 text-4xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all">+</button>
+    <button onclick="openAccountModal()" class="fixed bottom-8 right-8 w-14 h-14 bg-blue-600 rounded-full text-white font-black shadow-xl z-40 text-2xl flex items-center justify-center hover:scale-110 transition-transform">+</button>
 
     <script>
         const APP_ID = '1089';
-        let ws, isRunning = false, accounts = JSON.parse(localStorage.getItem('hunter_accounts') || '[]');
-        let totalProfit = 0, lossCount = 0, currentStake = 0, tickHistory = [], userBalance = 0;
+        let ws, isRunning = false, isBuying = false, accounts = JSON.parse(localStorage.getItem('hunter_accounts') || '[]');
+        let totalProfit = 0, currentStake = 0, tickHistory = [], userBalance = 0;
 
-        window.onload = () => {
-            renderAccountList();
-            const last = localStorage.getItem('hunter_last_acc');
-            if (last && accounts[last]) document.getElementById('activeAccount').value = last;
-        };
+        window.onload = () => { renderAccountList(); };
 
         function renderAccountList() {
             const s = document.getElementById('activeAccount');
             s.innerHTML = '<option value="">-- Profile --</option>';
             accounts.forEach((a, i) => s.innerHTML += `<option value="${i}">${a.name}</option>`);
-            if(accounts.length > 0) s.innerHTML += `<option value="WIPE">Wipe System</option>`;
         }
 
         function loadSelectedAccount() {
             const v = document.getElementById('activeAccount').value;
-            if(v === "WIPE") { if(confirm("Wipe all locally stored data?")) { localStorage.clear(); location.reload(); } }
             if(v !== "") localStorage.setItem('hunter_last_acc', v);
         }
 
-        function clearJournal() { document.getElementById('log').innerHTML = '<p class="text-slate-600">> Journal reset.</p>'; }
-        function clearAudit() { document.getElementById('historyBody').innerHTML = ''; log("Audit log purged.", "info"); }
+        function clearJournal() { document.getElementById('log').innerHTML = ''; }
+        function clearAudit() { document.getElementById('historyBody').innerHTML = ''; }
 
         function toggleBot() {
             if (isRunning) return stopBot();
             const idx = document.getElementById('activeAccount').value;
-            if (!idx || idx === "WIPE") return alert("Select or add a profile first.");
+            if (!idx) return alert("Select profile.");
             currentStake = parseFloat(document.getElementById('stakeAwal').value);
-            totalProfit = 0; lossCount = 0;
-            updateUI();
+            totalProfit = 0;
             initWebSocket(accounts[idx].token);
         }
 
@@ -199,80 +173,60 @@
             ws.onopen = () => ws.send(JSON.stringify({ authorize: token }));
             ws.onmessage = (msg) => {
                 const data = JSON.parse(msg.data);
-                if (data.error) { log(data.error.message, 'loss'); stopBot(); return; }
-                
                 if (data.msg_type === 'authorize') {
                     userBalance = data.authorize.balance;
                     document.getElementById('statBalance').innerText = `$${userBalance.toFixed(2)}`;
                     ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-                    const market = document.getElementById('marketSelect').value;
-                    ws.send(JSON.stringify({ ticks_history: market, end: 'latest', count: 100, subscribe: 1 }));
+                    ws.send(JSON.stringify({ ticks_history: "1HZ100V", end: "latest", count: 100, subscribe: 1 }));
                     startBot();
                 }
-
                 if (data.msg_type === 'balance') {
                     userBalance = data.balance.balance;
                     document.getElementById('statBalance').innerText = `$${userBalance.toFixed(2)}`;
-                    checkSafetyLimits();
+                    checkSafety();
                 }
-
-                if (data.msg_type === 'history') {
-                    tickHistory = data.history.prices.map(p => parseInt(p.toString().slice(-1)));
-                    log(`Injected 100 market ticks. Ready to hunt.`, 'info');
-                }
-
+                if (data.msg_type === 'history') tickHistory = data.history.prices.map(p => parseInt(p.toString().slice(-1)));
                 if (data.msg_type === 'tick') {
                     const d = parseInt(data.tick.quote.toString().slice(-1));
                     document.getElementById('statLastDigit').innerText = d;
-                    tickHistory.push(d);
-                    if(tickHistory.length > 100) tickHistory.shift();
+                    tickHistory.push(d); if(tickHistory.length > 100) tickHistory.shift();
                 }
-
                 if (data.msg_type === 'buy') {
                     ws.send(JSON.stringify({ proposal_open_contract: 1, contract_id: data.buy.contract_id, subscribe: 1 }));
                 }
-
                 if (data.msg_type === 'proposal_open_contract') {
                     const c = data.proposal_open_contract;
                     if (c.is_sold) {
-                        if(data.subscription) ws.send(JSON.stringify({ forget: data.subscription.id }));
+                        ws.send(JSON.stringify({ forget: data.subscription.id }));
                         processResult(c);
                     }
                 }
             };
         }
 
-        function checkSafetyLimits() {
-            const floor = parseFloat(document.getElementById('minBalance').value);
-            const target = parseFloat(document.getElementById('targetProfit').value);
-            if (userBalance <= floor) { log(`SAFETY KILL: $${floor} reached.`, 'loss'); stopBot(); }
-            if (totalProfit >= target) { log(`TARGET REACHED: +$${totalProfit.toFixed(2)}`, 'win'); stopBot(); }
-        }
-
-        function analyzeMarket() {
-            if (tickHistory.length < 50) return null;
+        function analyze() {
+            if (tickHistory.length < 50 || isBuying) return null;
             const counts = Array(10).fill(0);
             tickHistory.forEach(d => counts[d]++);
-            let leastDigit = 0, minCount = 101;
-            counts.forEach((count, digit) => { if (count < minCount) { minCount = count; leastDigit = digit; } });
-            const prob = (minCount / tickHistory.length) * 100;
-            const limit = parseFloat(document.getElementById('probLimit').value);
-            return prob <= limit ? leastDigit : null;
+            let least = 0, min = 101;
+            counts.forEach((c, i) => { if(c < min) { min = c; least = i; } });
+            const prob = (min / tickHistory.length) * 100;
+            return prob <= parseFloat(document.getElementById('probLimit').value) ? least : null;
         }
 
         function sendTrade() {
-            if (!isRunning || !ws) return;
-            const target = analyzeMarket();
-            if (target === null) { setTimeout(sendTrade, 1000); return; }
-            const market = document.getElementById('marketSelect').value;
-            const ticks = parseInt(document.getElementById('tickCount').value); 
+            if (!isRunning || isBuying) return;
+            const target = analyze();
+            if (target === null) { setTimeout(sendTrade, 500); return; }
+
+            isBuying = true;
             ws.send(JSON.stringify({
                 "buy": 1, "price": parseFloat(currentStake.toFixed(2)),
                 "parameters": { 
                     "amount": parseFloat(currentStake.toFixed(2)), "basis": "stake", 
                     "contract_type": "DIGITDIFF", "currency": "USD", 
-                    "duration": ticks, "duration_unit": "t", 
-                    "symbol": market, "barrier": target.toString() 
+                    "duration": 1, "duration_unit": "t", 
+                    "symbol": "1HZ100V", "barrier": target.toString() 
                 }
             }));
         }
@@ -281,48 +235,49 @@
             const p = parseFloat(c.profit);
             totalProfit += p;
             if (p > 0) {
-                lossCount = 0; currentStake = parseFloat(document.getElementById('stakeAwal').value);
+                currentStake = parseFloat(document.getElementById('stakeAwal').value);
                 log(`WIN: +$${p.toFixed(2)}`, 'win');
             } else {
-                lossCount++; currentStake *= 11;
-                log(`LOSS: Martingale x11 ($${currentStake.toFixed(2)})`, 'loss');
+                const mx = parseFloat(document.getElementById('martingaleX').value);
+                currentStake = parseFloat((currentStake * mx).toFixed(2)); 
+                log(`LOSS: Martingale x${mx} -> $${currentStake}`, 'loss');
             }
-            updateUI(); addHistoryRow(c);
-            setTimeout(sendTrade, 3500);
+            isBuying = false; 
+            updateUI(); addAudit(c);
+            setTimeout(sendTrade, 3000); 
+        }
+
+        function checkSafety() {
+            if (userBalance <= parseFloat(document.getElementById('minBalance').value) || 
+                totalProfit >= parseFloat(document.getElementById('targetProfit').value)) stopBot();
         }
 
         function updateUI() {
             const pEl = document.getElementById('statProfit');
             pEl.innerText = `$${totalProfit.toFixed(2)}`;
-            pEl.className = `text-2xl font-black mono ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
+            pEl.className = `text-xl font-black mono ${totalProfit >= 0 ? 'text-green-400' : 'text-red-400'}`;
             document.getElementById('statNextStake').innerText = `$${currentStake.toFixed(2)}`;
         }
 
-        function addHistoryRow(c) {
-            const tbody = document.getElementById('historyBody');
+        function addAudit(c) {
             const p = parseFloat(c.profit);
-            const row = `<tr class="hover:bg-white/5">
-                <td class="p-6 text-slate-500 font-mono">${new Date().toLocaleTimeString()}</td>
-                <td class="p-6 text-white font-black italic">${c.display_name.split(' ')[1]}</td>
-                <td class="p-6 text-blue-400">Differ ${c.barrier}</td>
-                <td class="p-6 text-slate-400">$${parseFloat(c.buy_price).toFixed(2)}</td>
-                <td class="p-6 text-right font-black ${p > 0 ? 'text-green-400' : 'text-red-400'}">${p > 0 ? '+' : ''}$${p.toFixed(2)}</td>
-            </tr>`;
-            tbody.insertAdjacentHTML('afterbegin', row);
+            const row = `<tr class="hover:bg-white/5"><td class="p-6 opacity-50 font-mono">${new Date().toLocaleTimeString()}</td><td class="p-6 text-blue-400">Differ ${c.barrier}</td><td class="p-6 text-slate-400">$${parseFloat(c.buy_price).toFixed(2)}</td><td class="p-6 text-right font-black ${p > 0 ? 'text-green-400' : 'text-red-400'}">${p > 0 ? '+' : ''}$${p.toFixed(2)}</td></tr>`;
+            document.getElementById('historyBody').insertAdjacentHTML('afterbegin', row);
         }
 
         function startBot() {
             isRunning = true;
-            document.getElementById('btnAction').innerText = "Stop Master Engine";
+            document.getElementById('btnAction').innerText = "Emergency Stop";
             document.getElementById('btnAction').classList.replace('bg-blue-600', 'bg-red-600');
             document.getElementById('connBadge').innerText = "Live";
             document.getElementById('connBadge').className = "px-5 py-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-black uppercase flex items-center";
-            setTimeout(sendTrade, 2000);
+            log("Engine Primed. Starting Pattern Hunt.", "info");
+            setTimeout(sendTrade, 1000);
         }
 
         function stopBot() {
             isRunning = false; if(ws) ws.close();
-            document.getElementById('btnAction').innerText = "Ignite Master Engine";
+            document.getElementById('btnAction').innerText = "Start Engine";
             document.getElementById('btnAction').classList.replace('bg-red-600', 'bg-blue-600');
             document.getElementById('connBadge').innerText = "Offline";
             document.getElementById('connBadge').className = "px-5 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase flex items-center";
@@ -338,8 +293,7 @@
             renderAccountList(); closeAccountModal();
         }
         function log(m, t) {
-            const lb = document.getElementById('log');
-            lb.insertAdjacentHTML('afterbegin', `<div class="${t} flex gap-2"><span class="opacity-20 text-[9px]">[${new Date().toLocaleTimeString()}]</span> <span>${m}</span></div>`);
+            document.getElementById('log').insertAdjacentHTML('afterbegin', `<div class="${t}">[${new Date().toLocaleTimeString()}] ${m}</div>`);
         }
     </script>
 </body>
